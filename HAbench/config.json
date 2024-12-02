@@ -1,0 +1,12 @@
+    {
+    "dataset_root_path": "../data/",
+    "log_path_color": "../logs/color.log",
+    "log_path_object_class": "../logs/object_class.log",
+    "log_path_scene": "../logs/scene.log",
+    "log_path_action": "../logs/action.log",
+    "log_path_overall_consistency": "../logs/overall_consistency.log",
+    "log_path_staticquality": "../logs/staticquality.log",
+    "log_path_dynamicquality": "../logs/dynamicquality.log",
+    "log_path_temporal_consistency": "../logs/temporal_consistency.log",
+    "log_path_motion_effects": "../logs/motion_effects.log"
+}
