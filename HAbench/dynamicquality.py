@@ -16,7 +16,7 @@ def call_api(client, messages, model):
     )
     return response.choices[0].message.content
 
-def chat(config, prompt, dimension):
+def eval(config, prompt, dimension):
     """
     Evaluate videos using OpenAI API
     Args:
@@ -35,10 +35,10 @@ def chat(config, prompt, dimension):
     logger.addHandler(file_handler)
 
     client = OpenAI(
-        api_key=config['api_key'],
-        base_url=config['base_url']
+        api_key = config['GPT4o_API_KEY'],
+        base_url = config['GPT4o_BASE_URL']
     )
-    MODEL = config['model_name']
+    MODEL = "gpt-4o-2024-08-06"
 
     # 初始化结果字典
     results = {}
@@ -46,7 +46,7 @@ def chat(config, prompt, dimension):
     # 加载数据集
     dataset = Video_Dataset(data_dir=config['dataset_root_path'])
     
-    # 处理每个视频
+    # 处理每组视频
     l1 = list(range(0, len(dataset)))
     for i in l1:
         try:

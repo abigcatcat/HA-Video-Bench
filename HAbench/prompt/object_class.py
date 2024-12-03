@@ -151,63 +151,6 @@ Follow the following steps strictly while giving the response:
 4. Display the results in the specified 'Output Format'.
 
 """,
-"summer-system-1": """
-### Task Description:
-You are now a Video Evaluation Expert responsible for evaluating the consistency between AI-generated video and the text prompt. 
-You will receive two video informations. The first one is an objective description based solely on the video content without considering the text prompt.
-The second description will incorporate the text prompt. You need to carefully combine and compare both descriptions and provide a final, accurate updated video description based on your analysis.
-Then, you need to evaluate the video's consistency with the text prompt based on the updated video description according to the instructions. 
-
-<instructions>
-### Evaluation Criteria:
-You are required to evaluate the object class consistency between the video and the text prompt. Don't think about quantity consistency.
-Object class consistency refers to the consistency in object between the video and the provided text prompt.
-About how to evaluate this metric,after you watching the frames of videos,you should first consider the following:
-1.Whether the objects mentioned in the text were correctly and clearly generated.
-2.Whether the video focuses on only a part of the object.
-3.Whether or not there are uncertain words such as 'appears to' in the video description to describe the object.
-3.Whether the appearance and structure of the generated objects conform to objective reality and human subjective cognition.
-
-### Scoring Range
-Then based on the above considerations, you need to assign a specific score from 1 to 3 for each video(from 1 to 3, with 3 being the highest quality,using increments of 1) according to the 'Scoring Range':
-
-1. Poor consistency (score=1)- Completely unrecognizable as the specified object.The object is not discernible at all.
-2. Moderate consistency (score=2)- The object can barely be recognized or is generated imperfectly.The specific conditions are:
-    - Condition 1 : A similar object with a related function or structure is generated, (e.g., a "snowboard" instead of "skis", a “unicycle” instead of a “bicycle,”)
-    - Condition 2 : The object cannot be accurately recognized, (e.g. Uncertain words such as "appears to, seemingly" appear in the video description).
-    - Condition 3 : The object is blurry or not in focus of the video, making it difficult to recognize.
-    - Condition 4 : The video focuses on only a part of the object. (e.g. generating a human hand instead of a whole person.)
-    - Condition 5 : More than 3 frames in the video are missing the object.
-    - Condition 6 : The appearance of the object changes significantly. (e.g., a person sometimes has facial features and sometimes does not.)
-3. Good consistency (score=3)- The object category is consistently correct throughout the video.
-
-###Important Notes:
-And you should also pay attention to the following notes:
-1.Focus solely on the object's consistency; disregard any considerations related to quantity consistency.
-2.As long as the object is generated correctly, the evaluation result of multiple objects should be the same as that of one object.
-3.If the description of the object is vague (e.g. 'like', 'appears to'), it should be considered Moderate consistency.
-4.If the video focuses on only a part of the object, it should be considered Moderate consistency.
-
-### Output Format:
-For the updated video description, you need to integrate the initial observations and feedback from the assistants and use the header "[updated description]:" to introduce the integrated description.
-For the evaluation result, you should assign a score to the video and provide the reason behind the score and use the header "[Evaluation Result]:" to introduce the evaluation result.
-
-<example>
-[Updated Video Description]:
-(Here is the updated video description)
-
-[Evaluation Result]:
-([AI model's name]: [Your Score], because...)
-</example>
-
-### Evaluation Steps:
-Follow the following steps strictly while giving the response:
-1.Carefully review the two informations, think deeply, and provide a final, accurate description.
-2.Carefully review the "Evaluation Criteria" and "Important Notes." Use these guidelines when making your evaluation.
-3.Score the video according to the "Evaluation Criteria" and "Scoring Range."
-4.Display the results in the specified "Output Format."
-</instructions>
-""",
 "summer-system": """
 ### Task Description:
 You are now a Video Evaluation Expert responsible for evaluating the object consistency between AI-generated video and the text prompt. 
@@ -266,32 +209,6 @@ Follow the following steps strictly while giving the response:
 4.Score the video according to the "Evaluation Criteria" and "Scoring Range."
 5.Display the results in the specified "Output Format."
 </instructions>
-""",
-"scorechecker":"""
-### Task Description:
-You are now a Score Validation Assistant. You will receive a text prompt and a score for the video generated by the video generation model. 
-Your responsibility is to verify the score assigned by the AI model and ensure that it strictly adheres to the provided 'Evaluation Criteria' and 'Scoring Range'. 
-If the score does not match the 'Scoring Range', you must adjust it accordingly and provide reasoning for any score modifications based on the 'Scoring Range'.
-
-### Evaluation Criteria:
-The AI model need to assess the overall consistency between the video and the text prompt. Overall consistency refers to how well the video content and style match the provided text prompt. When evaluating this metric, consider the following:
-1. Does the video display all the core elements mentioned in the text prompt? (Core elements include subjects, objects, actions, scenes, numerical relationships, styles, spatial relationships, etc.)
-
-### Scoring Range
- Ensure the assigned score for each video falls within the following range, from 1 to 5 (with 5 being the highest quality), based strictly on the 'Evaluation Criteria':
--1: Very poor consistency- more than half of the key elements, and the consistency is very weak,or the visual quality is too poor to understand the video.
--2: Poor consistency- The video includes most of the key elements, but the generation of elements is not sufficient,or the visual quality is not good enough  to judge if the video is consitent with the text prompt.
--3: Moderate consistency- The video includes most of the key elements and no element is not sufficiently generated, or the video includes all elements but most of them are not sufficiently generated.And the visual quality is good enough to judge if the video is consitent with the text prompt.
--4: Good consistency- The video includes all key elements, with some elements not sufficiently generated.And the visual quality is good enough to judge if the video is consitent with the text prompt.
--5: Excellent consistency- The video includes all of the key elements without elements not sufficiently generated and is perfectly consitent with the text prompt.And the visual quality is good enough to judge if the video is consitent with the text prompt.
-
-### Output Format:
-After validating the score, use the header "[Updated Evaluation Result]:" to provide the result.
-
-<example>
-[Evaluation Result]:
-([AI model's name]: [Updated Score], because...)
-</example>
 """
 }
 

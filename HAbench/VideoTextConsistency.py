@@ -22,6 +22,7 @@ class Agent():
         """
         self.agent = agent
         self.logger = logger
+        self.prompt = prompt
         self.config = config
         self.video_prompt=''
         self.history = []
@@ -29,8 +30,8 @@ class Agent():
         self.prompt_tokens = 0
 
         # openai configurations
-        self.api_key = " "
-        self.base_url = " "
+        self.api_key = self.config['GPT4o_mini_API_KEY']
+        self.base_url = self.config['GPT4o_mini_BASE_URL']
         self.model = "gpt-4o-mini"
 
     # reset everything, avoid initializing too many classes
@@ -106,8 +107,8 @@ class Host():
         self.history = []
         self.qa_history = []
         self.description = ''
-        self.api_key = " "
-        self.base_url = " "
+        self.api_key = self.config['GPT4o_API_KEY']
+        self.base_url = self.config['GPT4o_BASE_URL']
         self.model = "gpt-4o-2024-08-06"
         self.completion_tokens = 0
         self.prompt_tokens = 0
@@ -246,6 +247,46 @@ class Host():
         response = self.call_oai(self.messages)
         return response
 
+# 处理输出结果，按指定格式提取所需内容
+def extract_content_from_result(final_result):
+    valid_start_letters = ['l', 'p', 'k', 'v', 'g', 's', 'c']
+    content_des = ""
+    extracted_content = ""
+    start_index = final_result.find("Updated Video Description")
+    if start_index != -1:
+        # 提取 "Updated Video Description" 后面的内容
+        all_content = final_result[start_index + len("Updated Video Description"):].strip()
+
+        # 找到第一个字母的位置
+        first_letter_index = next((i for i, char in enumerate(all_content) if char.isalpha()), None)
+        if first_letter_index is not None:
+            all_content = all_content[first_letter_index:].strip()
+
+        while True:
+            eval_result_index = all_content.find("Evaluation Result")
+            if eval_result_index != -1:
+                content_des = all_content[:eval_result_index].strip()
+                remaining_content = all_content[eval_result_index + len("Evaluation Result"):].strip()
+
+                for a, char in enumerate(remaining_content):
+                    if char.isalpha() and char.lower() in valid_start_letters:
+                        content_score = remaining_content[a:].strip()
+                        break
+                else:
+                    content_score = ""
+
+                if content_score:
+                    print(content_score)
+                    break
+                else:
+                    all_content = all_content[eval_result_index + len("Evaluation Result"):].strip()
+            else:
+                print("未找到更多 'Evaluation Result' 部分")
+                break
+    else:
+        print("未找到 'Updated Video Description' 部分")
+
+    return content_des, content_score
 
 def eval(config, prompt,dimension):
     logger = logging.getLogger(__name__)
@@ -259,13 +300,18 @@ def eval(config, prompt,dimension):
     dataset = Video_Dataset(data_dir=config['dataset_root_path'])
     #
     index = 0
-    score = dict()
-    up_des = dict()
-    history = dict()
+    score = {}
+    up_des = {}
+    history = {}
 
     l1 = list(range(0, len(dataset)))
     for i in l1:
         data=dataset[i]
+
+        score[i] = {}
+        up_des[i] = {}
+        history[i] = {}
+
         model2message = {
              'lavie': "5 frames from lavie.",
              'pika': "7 frames from pika.",
@@ -285,7 +331,7 @@ def eval(config, prompt,dimension):
             host.video_prompt = data['prompt']
             host.frames = data['frames']
 
-            logger.info(f'>>>>>>>>This is the {index} round>>>>>>>')
+            logger.info(f'>>>>>>>>This is the {i}_{modelname} round>>>>>>>')
             try:
 
                 
@@ -299,80 +345,32 @@ def eval(config, prompt,dimension):
                 logger.info(f'>>>>>>>>>>answers:\n{answers}')
                 # 基于描述和问答给出最终评分
                 final_result = host.summarize_and_get_results()
-                history[index] = {
+                history[i][modelname] = {
                     'initial_response': init_response,
                     'qa_history': questions,
                     'final_result': final_result
                 }
-                logger.info(f'>>>>>>>the {index} round >>>>>>Discussion and judge:\n' + final_result)
+                logger.info(f'>>>>>>>the {i}_{modelname} round >>>>>>Discussion and judge:\n' + final_result)
 
                 # 处理格式以写入json 
-                valid_start_letters = ['l', 'p', 'k', 'v', 'g', 's', 'c']
-                content_des = ""
-                extracted_content = ""
-                #start_index = final_result.find("Evaluation Result")
-                start_index = final_result.find("Updated Video Description")
-                if start_index != -1:
-                    # 提取 "Updated Video Description" 后面的内容
-                    all_content = final_result[start_index + len("Updated Video Description"):].strip()
+                content_des, content_score = extract_content_from_result(final_result)
 
-                    while True:
-                        # 查找 "Evaluation Result" 的位置
-                        eval_result_index = all_content.find("Evaluation Result")
-                        if eval_result_index != -1:
-                            # 提取 "Updated Video Description" 到 "Evaluation Result" 之间的内容
-                            content_des = all_content[:eval_result_index].strip()
-
-                            # 提取 "Evaluation Result" 后面的内容
-                            remaining_content = all_content[eval_result_index + len("Evaluation Result"):].strip()
-
-                            # 遍历剩余内容，找到第一个符合要求的字母
-                            for a, char in enumerate(remaining_content):
-                                if char.isalpha():  # 判断是否是字母
-                                    # 判断是否为指定字母集合中的字母，忽略大小写
-                                    if char.lower() in valid_start_letters:
-                                        # 提取从第一个有效字母开始的所有内容
-                                        extracted_content = remaining_content[a:].strip()
-                                        break
-                            else:
-                                extracted_content = ""  # 如果找不到符合条件的字母
-
-                            # 如果提取到了符合条件的内容，则输出结果并退出循环
-                            if extracted_content:
-                                print(extracted_content)
-                                break  # 找到符合条件的结果后，退出循环
-                            else:
-                                # 没有找到符合条件的内容，继续查找下一个 "Evaluation Result"
-                                all_content = all_content[eval_result_index + len("Evaluation Result"):].strip()
-                        else:
-                            print("未找到更多 'Evaluation Result' 部分")
-                            break  # 没有更多 "Evaluation Result" 时，退出循环
-                else:
-                    print("未找到 'Updated Video Description' 部分")
-
-                up_des[index] = content_des
-                score[index] = extracted_content
+                up_des[i][modelname] = content_des
+                score[i][modelname] = content_score
 
             except Exception as e:
                 logger.info('>>>>>>>>>>>Error occurred during conversation...')
                 logger.info('Errormessage: ' + str(e))
                 print(f"An error occurred: {e}")
-                score[index] = 'Error'
+                score[i][modelname] = 'Error'
 
             for agent in agents:
                 agent.reset()
             host.reset()
-            index += 1
 
     return {
         'history': history,  # 评估历史记录
-        'updated_description': up_des,  # 视频描述
+        'updated_description': up_des,  # 视频最终描述
         'score': score         # 最终评分结果
     }
-    # save results
-    # with open("../history.json", "w") as f:
-    #     json.dump(history, f,indent=4)
-    # with open("../description.json", "w") as f:
-    #     json.dump(up_des, f,indent=4)
-    # with open("../result.json", "w") as f:
-    #     json.dump(score, f,indent=4)
+

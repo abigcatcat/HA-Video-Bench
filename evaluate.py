@@ -52,11 +52,10 @@ def main():
     kwargs = {}
 
     dimension_str = args.dimension[0]
-    last_part = os.path.basename(args.videos_path)
     HAVBench.evaluate(
         videos_path = args.videos_path,
         #name = f'results_{current_time}',
-        name = f'results_{dimension_str}_{last_part}',
+        name = f'results_{dimension_str}',
         dimension_list = args.dimension,
         **kwargs
     )

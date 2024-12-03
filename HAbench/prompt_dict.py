@@ -3,10 +3,10 @@ from .prompt.color import *
 from .prompt.object_class import *
 from .prompt.scene import *
 from .prompt.action import *
-from .PromptTemplate4GPTeval import Prompt4ImagingQuality
-from .PromptTemplate4GPTeval import Prompt4AestheticQuality
-from .PromptTemplate4GPTeval import Prompt4TemporalConsistency
-from .PromptTemplate4GPTeval import Prompt4MotionEffects
+from .prompt.PromptTemplate4GPTeval import Prompt4ImagingQuality
+from .prompt.PromptTemplate4GPTeval import Prompt4AestheticQuality
+from .prompt.PromptTemplate4GPTeval import Prompt4TemporalConsistency
+from .prompt.PromptTemplate4GPTeval import Prompt4MotionEffects
 
 
 prompt = {

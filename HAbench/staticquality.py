@@ -17,8 +17,8 @@ def eval(config, prompt,dimension):
     logger.addHandler(file_handler)
 
     client = OpenAI(
-        api_key="",
-        base_url=""
+        api_key = config['GPT4o_API_KEY'],
+        base_url = config['GPT4o_BASE_URL']
     )
 
     MODEL="gpt-4o-2024-08-06"

@@ -101,6 +101,6 @@ class HABench(object):
                 save_json(results['updated_description'], os.path.join(dimension_output_dir, f'{name}_updated_description_results.json'))
                 save_json(results['score'], os.path.join(dimension_output_dir, f'{name}_score_results.json'))
             else:
-                save_json(results, os.path.join(dimension_output_dir, f'{name}_score_results.json'))
+                save_json(results['score'], os.path.join(dimension_output_dir, f'{name}_score_results.json'))
         
         return results

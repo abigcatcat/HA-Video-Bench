@@ -65,7 +65,7 @@ class Video_Dataset:
 
         return base64Frames
     
-    def process_video2gridview(datadir, videos_path, extract_frames_persecond=8):
+    def process_video2gridview(self,datadir, videos_path, extract_frames_persecond=8):
         base64Frames = {"cogvideox5b": [], "kling": [], "gen3": [], "lavie": [], "pika": [], "show1": [], "videocrafter2": []}
 
         def process_video(key):
